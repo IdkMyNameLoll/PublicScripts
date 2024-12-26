@@ -1,0 +1,127 @@
+local v0 = game.Players.LocalPlayer;
+local v1 = v0:WaitForChild("PlayerGui");
+local v2 = game:GetService("TweenService");
+local v3 = game.Players.LocalPlayer:WaitForChild("PlayerGui");
+local v4 = v3:FindFirstChild("MainUI");
+local v5 = nil;
+local v6 = {Title="Title",Desc="Description",Reason="Reason",Image="rbxassetid://12309073114"};
+if not v4 then
+	return;
+end
+v5 = v4;
+function achivement(v7)
+	spawn(function()
+		local v10 = 0 - 0;
+		local v11;
+		while true do
+			if (v10 == (3 + 0)) then
+				local v13 = 350 - (87 + 263);
+				while true do
+					if (v13 == (181 - (67 + 113))) then
+						v11.Frame:TweenPosition(UDim2.new(0 + 0, 0 - 0, 0 + 0, 0 - 0), "Out", "Quad", 0.5, true);
+						v10 = 956 - (802 + 150);
+						break;
+					end
+					if (v13 == (0 - 0)) then
+						v11:TweenSize(UDim2.new(1 - 0, 0 + 0, 0.2, 0 - 0), "In", "Quad", 997.8 - (915 + 82), true);
+						wait(0.8 - 0);
+						v13 = 1748 - (760 + 987);
+					end
+				end
+			end
+			if (v10 == (2 + 0)) then
+				if v7.Image then
+					v11.Frame.ImageLabel.Image = v7.Image;
+				end
+				v11.Parent = v5.AchievementsHolder;
+				v11.Sound:Play();
+				v10 = 3;
+			end
+			if (v10 == 5) then
+				wait(766.5 - (745 + 21));
+				v11:TweenSize(UDim2.new(1 - 0, 0, -0.1, 0 + 0), "InOut", "Quad", 0.5 - 0, true);
+				wait(1187.5 - (1069 + 118));
+				v10 = 13 - 7;
+			end
+			if (v10 == (12 - 6)) then
+				v11:Destroy();
+				break;
+			end
+			if (v10 == (1 + 3)) then
+				v2:Create(v11.Frame.Glow, TweenInfo.new(1 - 0, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency=(1 + 0)}):Play();
+				wait(8 + 0);
+				v11.Frame:TweenPosition(UDim2.new(1.1, 791 - (368 + 423), 0 - 0, 18 - (10 + 8)), "In", "Quad", 0.5 - 0, true);
+				v10 = 447 - (416 + 26);
+			end
+			if (v10 == (3 - 2)) then
+				local v16 = 0 + 0;
+				while true do
+					if (v16 == (0 - 0)) then
+						v11.Name = "LiveAchievement";
+						v11.Visible = true;
+						v16 = 1;
+					end
+					if (v16 == (2 - 1)) then
+						for v26, v27 in pairs(v7) do
+							local v28 = 438 - (145 + 293);
+							local v29;
+							while true do
+								if (v28 == (430 - (44 + 386))) then
+									v29 = v11.Frame.Details:FindFirstChild(v26);
+									if v29 then
+										v29.Text = v27;
+									end
+									break;
+								end
+							end
+						end
+						v10 = 16 - (9 + 5);
+						break;
+					end
+				end
+			end
+			if (v10 == (1486 - (998 + 488))) then
+				local v17 = 0 + 0;
+				while true do
+					if (v17 == (1 + 0)) then
+						v11.Frame.Position = UDim2.new(1.1 + 0, 0, 772 - (201 + 571), 0 + 0);
+						v10 = 1139 - (116 + 1022);
+						break;
+					end
+					if ((1930 - (1869 + 61)) == v17) then
+						v11 = v5.AchievementsHolder.Achievement:Clone();
+						v11.Size = UDim2.new(0 - 0, 0 + 0, 0 - 0, 0 - 0);
+						v17 = 3 - 2;
+					end
+				end
+			end
+		end
+	end);
+end
+return function(v8)
+	local v9 = 0 + 0;
+	while true do
+		if ((1 - 0) == v9) then
+			achivement(v8);
+			break;
+		end
+		if (v9 == (0 + 0)) then
+			local v12 = 859 - (814 + 45);
+			while true do
+				if (v12 == (0 - 0)) then
+					v8 = ((type(v8) == "table") and v8) or {};
+					for v24, v25 in v6 do
+						if (v8[v24] == nil) then
+							v8[v24] = v25;
+						end
+					end
+					v12 = 1;
+				end
+				if (v12 == (1 + 0)) then
+					v9 = 1;
+					break;
+				end
+			end
+		end
+	end
+end;
