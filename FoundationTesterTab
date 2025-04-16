@@ -1,0 +1,103 @@
+if _G.FoundationTesterTabExecuted == false or _G.FoundationTesterTabExecuted == nil then _G.FoundationTesterTabExecuted = true else return end
+
+local v_u_1 = {}
+local s_UserInputService_0 = game:GetService("UserInputService")
+local s_TweenService_0 = game:GetService("TweenService")
+local l_TotalParent_0 = game.Players.LocalPlayer.PlayerGui.NotBrokenUI.TotalParent
+local l_TesterConsole_0 = l_TotalParent_0.TesterConsole
+local l_TesterConsoleMobile_0 = l_TotalParent_0.TesterConsoleMobile
+local v_u_2 = false
+local v_u_3 = false
+v_u_1.ChangeRoomName = function(p4)
+	l_TesterConsole_0.roomName.Text = "Room Name: " .. p4
+end;
+v_u_1.ChangeCurrentRoom = function(p5)
+	l_TesterConsole_0.currentRoom.Text = "Current Room: " .. p5
+end;
+v_u_1.Init = function()
+	l_TesterConsole_0.Visible = true
+	local function f_AppearNDisappear()
+		if l_TesterConsole_0:GetAttribute("Visible") == true then
+			v_u_3 = false
+			l_TesterConsole_0:SetAttribute("Visible", false)
+			s_TweenService_0:Create(l_TesterConsole_0, TweenInfo.new(0.35), {
+				["AnchorPoint"] = Vector2.new(0, 0.5)
+			}):Play()
+			s_TweenService_0:Create(l_TesterConsole_0.UIScale, TweenInfo.new(0.35), {
+				["Scale"] = 0.9
+			}):Play()
+			l_TesterConsole_0.Pop:Play()
+			v_u_2 = true
+			task.delay(0.25, function()
+				v_u_2 = false
+			end)
+		else
+			v_u_3 = true
+			l_TesterConsole_0:SetAttribute("Visible", true)
+			s_TweenService_0:Create(l_TesterConsole_0, TweenInfo.new(0.35), {
+				["AnchorPoint"] = Vector2.new(1, 0.5)
+			}):Play()
+			s_TweenService_0:Create(l_TesterConsole_0.UIScale, TweenInfo.new(0.35), {
+				["Scale"] = 1
+			}):Play()
+			l_TesterConsole_0.Pop:Play()
+			v_u_2 = true
+			task.delay(0.25, function()
+				v_u_2 = false
+			end)
+		end;
+	end;
+	l_TesterConsoleMobile_0.MouseButton1Click:Connect(function()
+		if not v_u_2 then
+			f_AppearNDisappear()
+		end;
+	end)
+	s_UserInputService_0.InputEnded:Connect(function(p6, p7)
+		if not p7 and (p6.KeyCode == Enum.KeyCode.Semicolon and v_u_2 == false) then
+			f_AppearNDisappear()
+		end;
+	end)
+	s_UserInputService_0.InputEnded:Connect(function(p8, p9)
+		if not p9 and v_u_3 then
+			if p8.KeyCode == Enum.KeyCode.T and not p9 then
+				local l_Character_0 = game.Players.LocalPlayer.Character
+				assert(l_Character_0, "Character not found")
+				l_Character_0:PivotTo(CFrame.new(game.Players.LocalPlayer:GetMouse().Hit.Position + Vector3.new(0, 3, 0)))
+			end;
+			if p8.KeyCode == Enum.KeyCode.F12 and not p9 then
+				if game.Lighting.Ambient ~= Color3.new(1, 1, 1) then
+					game.Lighting.Ambient = game.Lighting:GetAttribute("AmbientToUse")
+					return;
+				end;
+				game.Lighting.Ambient = Color3.new(1, 1, 1)
+			end;
+		end;
+	end)
+	
+	local function changedRoomFunc(p10)
+		local v11 = string.match(p10.Name, "^Room(%d+)$")
+		if v11 then
+			v_u_1.ChangeCurrentRoom(v11)
+		else
+			v_u_1.ChangeCurrentRoom("NIL")
+		end;
+		if p10:GetAttribute("RawName") then
+			v_u_1.ChangeRoomName((p10:GetAttribute("RawName")))
+			return;
+		end;
+		v_u_1.ChangeRoomName("NIL")
+	end
+	
+	l_TotalParent_0.Parent.CLIENT_MAIN.CLIENT.Values.CurrentRoom.Changed:Connect(function(p10)
+		task.wait(0.1)
+		if p10 then
+			changedRoomFunc(p10)
+		end;
+	end)
+	
+	if l_TotalParent_0.Parent.CLIENT_MAIN.CLIENT.Values.CurrentRoom.Value then
+		changedRoomFunc(l_TotalParent_0.Parent.CLIENT_MAIN.CLIENT.Values.CurrentRoom.Value)
+	end
+end;
+
+v_u_1.Init()
