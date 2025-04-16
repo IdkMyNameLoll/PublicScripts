@@ -16,6 +16,9 @@ v_u_1.ChangeCurrentRoom = function(p5)
 end;
 v_u_1.Init = function()
 	l_TesterConsole_0.Visible = true
+	if s_UserInputService_0.TouchEnabled == true then
+		l_TesterConsoleMobile_0.Visible = true
+	end
 	local function f_AppearNDisappear()
 		if l_TesterConsole_0:GetAttribute("Visible") == true then
 			v_u_3 = false
