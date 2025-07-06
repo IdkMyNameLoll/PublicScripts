@@ -137,6 +137,12 @@ if game.PlaceId == 18794863104 then
 		Icon = "rbxassetid://2795572803",
 		PremiumOnly = false
 	})
+	
+	local TabVisual = Window:MakeTab({
+		Name = "Visual",
+		Icon = "",
+		PremiumOnly = false
+	})
 
 	local TabTool = Window:MakeTab({
 		Name = "Items",
@@ -872,9 +878,16 @@ if game.PlaceId == 18794863104 then
 	})
 	
 	TabTool:AddButton({
-		Name = "Fix Camera Computer",
+		Name = "Fix Camera Monitor",
 		Callback = function()
 			workspace:SetAttribute("Weather","Clear")
+		end    
+	})
+	
+	TabTool:AddButton({
+		Name = "Fix Energy Monitor",
+		Callback = function()
+			workspace:FindFirstChild("EnergyMonitorFeed",true):SetAttribute("Broken",false) 
 		end    
 	})
 
@@ -977,25 +990,33 @@ if game.PlaceId == 18794863104 then
 		end    
 	})
 	
+	local doingLikeAGoodBoy = false --yeah this variable is sigma isnt it
+	
 	TabTroll:AddButton({
 		Name = "Disappear All Items",
 		Callback = function()
-			for _, d in pairs(workspace.Items:GetChildren()) do
-				if d.PrimaryPart then
-					local newForce = Instance.new("BodyPosition",d.PrimaryPart)
-					newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-					newForce.Position = Vector3.new(1000000,1000000,1000000)
-				end
-			end
-			
-			for _, d in pairs(game.Players:GetChildren()) do
-				local Tools = d:WaitForChild("ToolsHolder")
+			if doingLikeAGoodBoy == false then
+				doingLikeAGoodBoy = true
 				
-				for _, d in pairs(Tools:GetChildren()) do
-					if d.PrimaryPart then
-						local newForce = Instance.new("BodyPosition",d.PrimaryPart)
-						newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
-						newForce.Position = Vector3.new(1000000,1000000,1000000)
+				while task.wait() do
+					for _, d in pairs(workspace.Items:GetChildren()) do
+						if d.PrimaryPart then
+							local newForce = Instance.new("BodyPosition",d.PrimaryPart)
+							newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+							newForce.Position = Vector3.new(1000000,1000000,1000000)
+						end
+					end
+
+					for _, d in pairs(game.Players:GetChildren()) do
+						local Tools = d:WaitForChild("ToolsHolder")
+
+						for _, d in pairs(Tools:GetChildren()) do
+							if d.PrimaryPart then
+								local newForce = Instance.new("BodyPosition",d.PrimaryPart)
+								newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+								newForce.Position = Vector3.new(1000000,1000000,1000000)
+							end
+						end
 					end
 				end
 			end
@@ -1050,16 +1071,50 @@ if game.PlaceId == 18794863104 then
 				end
 			else
 				local room = returnGhostInfo().favroom
-				
+
 				if workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature") <= 0 then
 					mentionCheckV1000(room)
 				end
-				
+
 				looppppppNOTOOTO = workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttributeChangedSignal("Temperature"):Connect(function()
 					if workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature") <= 0 then
 						mentionCheckV1000(room)
 					end
 				end)
+			end
+		end    
+	})
+	
+	TabRooms:AddToggle({
+		Name = "Noclip Through Doors",
+		Default = false,
+		Callback = function(Value)
+			for _, d in pairs(workspace.Doors:GetChildren()) do
+				task.spawn(function()
+					for _, d22 in pairs(d:WaitForChild("Door"):GetChildren()) do
+						if d22:IsA("BasePart") and d22.Name ~= "GhostTracker" then
+							d22.CanCollide = not Value
+						end
+					end
+				end)
+			end
+		end    
+	})
+	
+	TabVisual:AddToggle({
+		Name = "Full brightness",
+		Default = false,
+		Callback = function(Value)
+			if Value == true then
+				game.Lighting.Brightness = 2
+				game.Lighting.ClockTime = 14
+				game.Lighting.GlobalShadows = false
+				game.Lighting.OutdoorAmbient = Color3.fromRGB(209, 209, 209)
+			else
+				game.Lighting.Brightness = 0
+				game.Lighting.ClockTime = 0
+				game.Lighting.GlobalShadows = true
+				game.Lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0)
 			end
 		end    
 	})
@@ -1086,8 +1141,17 @@ elseif game.PlaceId == 18199615050 then
 
 				for _, d in pairs(game.Players:GetChildren()) do
 					if d ~= game.Players.LocalPlayer then
-						game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InvitePlayerToParty"):FireServer(d)
-						task.wait(0.65)
+						if d:GetAttribute("TeamInvites") then
+							if d:GetAttribute("TeamInvites") == "Everyone" then
+								game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InvitePlayerToParty"):FireServer(d)
+								task.wait(0.65)
+							elseif d:GetAttribute("TeamInvites") == "Friends" then
+								if game.Players.LocalPlayer:IsFriendsWith(d.UserId) then
+									game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InvitePlayerToParty"):FireServer(d)
+									task.wait(0.65)
+								end
+							end
+						end
 					end
 				end
 
