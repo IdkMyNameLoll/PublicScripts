@@ -1,0 +1,1110 @@
+if not game:IsLoaded() then
+	game.Loaded:Wait()
+end
+
+if game.PlaceId == 18794863104 then
+	local function ridarScan()
+		local v1 = game:GetService("ReplicatedStorage")
+		local v2 = game:GetService("UserInputService")
+		local u3 = game:GetService("RunService")
+		local u4 = game:GetService("Players").LocalPlayer
+		local v5 = u4:WaitForChild("PlayerScripts")
+		local u8 = v5:WaitForChild("Events")
+		local u9 = workspace:FindFirstChild("LIDAR_V2") or Instance.new("Folder")
+		local u10 = workspace.CurrentCamera
+		local u11 = nil
+		local u12 = false
+
+		u9.Name = "LIDAR_V2"
+		u9.Parent = workspace
+
+		local function GenerateScreenPoints(p13, p14, p15)
+			local v16 = p14 * p15
+			local v17 = v16 * p13
+			local v18 = math.ceil(v17)
+			local v19 = v16 / v18
+			local v20 = math.sqrt(v19)
+			local v21 = p15 / v20
+			local v22 = math.floor(v21)
+			local v23 = p14 / v20
+			local v24 = math.floor(v23)
+			local v25 = {}
+			for v26 = 0, v22 - 1 do
+				for v27 = 0, v24 - 1 do
+					if v18 <= #v25 then
+						break
+					end
+					local v28 = math.random
+					local v29 = v27 * v20
+					local v30 = (v27 + 1) * v20 - 1
+					local v31 = v28(v29, (math.min(v30, p14)))
+					local v32 = math.random
+					local v33 = v26 * v20
+					local v34 = (v26 + 1) * v20 - 1
+					local v35 = v32(v33, (math.min(v34, p15)))
+					local v36 = Vector2.new
+					table.insert(v25, v36(v31, v35))
+				end
+			end
+			return v25
+		end
+
+		local function GetColorFromScreenPosition(p37)
+			local v38 = Vector2.new(u10.ViewportSize.X / 2, u10.ViewportSize.Y / 2)
+			local v39 = (p37 - v38).Magnitude / (v38.Magnitude * 0.7)
+			local v40 = math.clamp(v39, 0, 1)
+			local v41
+			if v40 < 0.5 then
+				local v42 = v40 * 2
+				v41 = Color3.new(1 - v42, v42, 0)
+			else
+				local v43 = (v40 - 0.5) * 2
+				v41 = Color3.new(v43, 1, v43)
+			end
+			local v44, v45, v46 = v41:ToHSV()
+			return Color3.fromHSV(v44, v45, v46 * 0.7)
+		end
+
+		local function CreateLidarSpheres(p47, p48)
+			local v49 = p48:ViewportPointToRay(p47.X, p47.Y)
+			local v50 = RaycastParams.new()
+			v50.FilterDescendantsInstances = { u4.Character }
+			v50.FilterType = Enum.RaycastFilterType.Exclude
+			local v51 = workspace:Raycast(v49.Origin, v49.Direction * 1000, v50)
+			if v51 then
+				if v51 then
+					local v52 = v5.ItemControllers:WaitForChild("LIDAR Scanner").Part:Clone()
+					v52.Position = v51.Position
+					v52.Color = GetColorFromScreenPosition(p47)
+					v52.Parent = u9
+				end
+			end
+		end
+
+		local function RenderLidarOutput()
+			local v53 = u10.ViewportSize.X
+			local v54 = u10.ViewportSize.Y
+			local v55 = GenerateScreenPoints(0.001, v53, v54)
+			workspace.LIDAR:ClearAllChildren()
+			local v56 = workspace:FindFirstChild("Ghost"):Clone()
+			for _, v57 in v56:GetDescendants() do
+				if v57:IsA("BasePart") then
+					v57.CanCollide = false
+					v57.CanQuery = true
+					v57.Anchored = true
+					v57.CollisionGroup = "Default"
+					v57.Transparency = 1
+				end
+			end
+			v56.Parent = workspace
+			for v58, v59 in ipairs(v55) do
+				if v58 % 100 == 0 then
+					u3.Heartbeat:Wait()
+				end
+				CreateLidarSpheres(v59, u10)
+			end
+			v56:Destroy()
+		end
+
+		RenderLidarOutput()
+	end
+
+	local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua")))()
+	local Window = OrionLib:MakeWindow({IntroText = "Demonology (PEAK HUBBBBBBBB)", IntroIcon = "rbxassetid://129483530478597",Name = ("Sybau Hub - Demonology🕯️".." | ".. identifyexecutor()),IntroToggleIcon = "rbxassetid://7734091286", HidePremium = false, SaveConfig = true, IntroEnabled = true, ConfigFolder = "sybayghostgameorsum"})
+	local stuff = {
+		["SeeGhost"] = false,
+		["prints"] = nil,
+		["question"] = "Where are you?",
+		["sayInchat"] = false,
+		["sayInchat2"] = false,
+		["playerChatted"] = {},
+		["ghostSeePlayerDistance"] = 15,
+		["ghostSeePlayerEnabled"] = false,
+		["seechats"] = "all",
+		["warningHunt"] = nil
+	}
+
+	local ghostLaserVisible = false
+
+	local TabCool = Window:MakeTab({
+		Name = "Ghost",
+		Icon = "rbxassetid://10216760174",
+		PremiumOnly = false
+	})
+
+	local TabPlayer = Window:MakeTab({
+		Name = "Player",
+		Icon = "rbxassetid://2795572803",
+		PremiumOnly = false
+	})
+
+	local TabTool = Window:MakeTab({
+		Name = "Items",
+		Icon = "rbxassetid://129483530478597",
+		PremiumOnly = false
+	})
+	
+	local TabRooms = Window:MakeTab({
+		Name = "Rooms",
+		Icon = "rbxassetid://11558483282",
+		PremiumOnly = false
+	})
+
+	--local Misc = Window:MakeTab({
+	--	Name = "Misc",
+	--	Icon = "rbxassetid://4370318685",
+	--	PremiumOnly = false
+	--})
+
+	--local GlovesTab = Window:MakeTab({
+	--	Name = "Gloves Optional",
+	--	Icon = "rbxassetid://7733955740",
+	--	PremiumOnly = false
+	--})
+
+	local TabTroll = Window:MakeTab({
+		Name = "Trolling",
+		Icon = "rbxassetid://7733917120",
+		PremiumOnly = false
+	})
+
+	--local Ability = Window:MakeTab({
+	--	Name = "Abilities",
+	--	Icon = "rbxassetid://7733917120",
+	--	PremiumOnly = false
+	--})
+
+	--OrionLib:MakeNotification({
+	--	Name = "Error",
+	--	Content = "You didn't use the save 64 ability first!",
+	--	Image = "rbxassetid://7733658504",
+	--	Time = 5
+	--})
+
+	local function sayChatMessage(msg)
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("AskSpiritBoxFromUI"):FireServer(msg)
+	end
+
+	local function getAdrenalineBoostWithCooffee()
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CoffeeBrewing"):WaitForChild("FillCup"):FireServer()
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CoffeeBrewing"):WaitForChild("AddFlavor"):FireServer("Mocha")
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CoffeeBrewing"):WaitForChild("AddFlavor"):FireServer("Strawberry")
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("CoffeeBrewing"):WaitForChild("AddFlavor"):FireServer("Caramel")
+		game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DrinkCoffee"):FireServer()
+	end
+
+	local function returnGhostInfo()
+		local Ghost = workspace:WaitForChild("Ghost")
+
+		return {
+			age = tostring(Ghost:GetAttribute("Age")),
+			favroom = Ghost:GetAttribute("FavoriteRoom"),
+			crntroom = Ghost:GetAttribute("CurrentRoom"),
+			gender = Ghost:GetAttribute("Gender"),
+			mdlName = Ghost:GetAttribute("VisualModel")
+		}
+	end
+
+	function roundToDecimal(num, decimalPlaces)
+		local multiplier = 10 ^ decimalPlaces
+		return math.floor(num * multiplier + 0.5) / multiplier
+	end
+
+	workspace:WaitForChild("Ghost"):GetAttributeChangedSignal("LaserVisible"):Connect(function()
+		local GetVal = workspace:WaitForChild("Ghost"):GetAttribute("LaserVisible")
+
+		if GetVal == true then
+			if workspace:WaitForChild("Ghost"):GetAttribute("Transparency") then
+				if workspace:WaitForChild("Ghost"):GetAttribute("Transparency") < 1 then
+					ghostLaserVisible = true
+				end
+			end
+		end
+	end)
+
+	workspace:WaitForChild("Ghost"):GetAttributeChangedSignal("Transparency"):Connect(function()
+		local GetVal = workspace:WaitForChild("Ghost"):GetAttribute("Transparency")
+
+		if GetVal < 1 then
+			if workspace:WaitForChild("Ghost"):GetAttribute("LaserVisible") then
+				if workspace:WaitForChild("Ghost"):GetAttribute("LaserVisible") == true then
+					ghostLaserVisible = true
+				end
+			end
+		end
+	end)
+
+	TabCool:AddToggle({
+		Name = "View Ghost",
+		Default = false,
+		Callback = function(Value)
+			stuff.SeeGhost = Value
+
+			if Value == true then
+				while stuff.SeeGhost == true do
+					task.wait()
+					if stuff.SeeGhost == true then
+						if workspace:WaitForChild("Ghost"):GetAttribute("VisualModel") == "Biter" and game.Players.LocalPlayer:GetAttribute("TrypophobiaSafe") == true then
+							workspace:WaitForChild("Ghost"):WaitForChild("HumanoidRootPart"):WaitForChild("Cat"):WaitForChild("ImageLabel").ImageTransparency = 0.25
+						else
+							if workspace:WaitForChild("Ghost"):GetAttribute("Transparency") then
+								if workspace:WaitForChild("Ghost"):GetAttribute("Transparency") <= 0.25 then
+									for _, d in pairs(workspace:WaitForChild("Ghost").VisibleParts:GetDescendants()) do
+										if d:IsA("BasePart") then
+											d.Transparency = workspace:WaitForChild("Ghost"):GetAttribute("Transparency")
+										elseif d:IsA("ParticleEmitter") or d:IsA("Light") then
+											d.Enabled = true
+										end
+									end
+								else
+									for _, d in pairs(workspace:WaitForChild("Ghost").VisibleParts:GetDescendants()) do
+										if d:IsA("BasePart") then
+											d.Transparency = 0.25
+										elseif d:IsA("ParticleEmitter") or d:IsA("Light") then
+											d.Enabled = true
+										end
+									end
+								end
+							else
+								for _, d in pairs(workspace:WaitForChild("Ghost").VisibleParts:GetDescendants()) do
+									if d:IsA("BasePart") then
+										d.Transparency = 0.25
+									elseif d:IsA("ParticleEmitter") or d:IsA("Light") then
+										d.Enabled = true
+									end
+								end
+							end
+						end
+					else
+						if workspace:WaitForChild("Ghost"):GetAttribute("VisualModel") == "Biter" and game.Players.LocalPlayer:GetAttribute("TrypophobiaSafe") == true then
+							workspace:WaitForChild("Ghost"):WaitForChild("HumanoidRootPart"):WaitForChild("Cat"):WaitForChild("ImageLabel").ImageTransparency = workspace:WaitForChild("Ghost"):GetAttribute("Transparency")
+						else
+							for _, d in pairs(workspace:WaitForChild("Ghost").VisibleParts:GetDescendants()) do
+								if d:IsA("BasePart") then
+									d.Transparency = workspace:WaitForChild("Ghost"):GetAttribute("Transparency")
+								elseif d:IsA("ParticleEmitter") or d:IsA("Light") then
+									d.Enabled = workspace:WaitForChild("Ghost"):GetAttribute("Transparency") < 1
+								end
+							end
+						end
+					end
+				end
+			else
+				for _, d in pairs(workspace:WaitForChild("Ghost").VisibleParts:GetDescendants()) do
+					if d:IsA("BasePart") then
+						d.Transparency = 1
+					elseif d:IsA("ParticleEmitter") or d:IsA("Light") then
+						d.Enabled = false
+					end
+				end
+			end
+		end    
+	})
+
+	TabCool:AddToggle({
+		Name = "View Ghost Handprints",
+		Default = false,
+		Callback = function(Value)
+			if stuff.prints then
+				stuff.prints:Disconnect()
+				stuff.prints = nil
+			end
+
+			if Value == true then
+				for _, d in pairs(workspace.Handprints:GetChildren()) do
+					d:FindFirstChildOfClass("Decal").Transparency = 0
+				end
+
+				stuff.prints = workspace.Handprints.ChildAdded:Connect(function(handprint)
+					handprint:FindFirstChildOfClass("Decal").Transparency = 0
+				end)
+			else
+				if stuff.prints then
+					stuff.prints:Disconnect()
+					stuff.prints = nil
+				end
+
+				for _, d in pairs(workspace.Handprints:GetChildren()) do
+					d:FindFirstChildOfClass("Decal").Transparency = 1
+				end
+			end
+		end    
+	})
+
+	TabCool:AddButton({
+		Name = "Get Ghost Info",
+		Callback = function()
+			local info = returnGhostInfo()
+
+			if stuff.sayInchat == false then
+				OrionLib:MakeNotification({
+					Name = "Ghost Info",
+					Content = info.gender.." | Age "..info.age.."\nGhost Room | "..info.favroom,
+					Image = "rbxassetid://7733658504",
+					Time = 5
+				})
+			else
+				sayChatMessage("the ghost is a "..string.lower(info.gender)..", age "..info.age.." and its favorite room is "..string.lower(info.favroom))
+			end
+		end    
+	})
+
+	TabCool:AddButton({
+		Name = "Get Ghost Current Room",
+		Callback = function()
+			local info = returnGhostInfo()
+
+			if stuff.sayInchat == false then
+				OrionLib:MakeNotification({
+					Name = "Ghost Info",
+					Content = info.crntroom,
+					Image = "rbxassetid://7733658504",
+					Time = 5
+				})
+			else
+				sayChatMessage("The ghost is in the "..string.lower(info.crntroom))
+			end
+		end    
+	})
+
+	TabCool:AddToggle({
+		Name = "Tell Ghost Info In Chat",
+		Default = false,
+		Callback = function(Value)
+			stuff.sayInchat = Value
+		end    
+	})
+
+	TabCool:AddSlider({
+		Name = "Notify ghost nearby (distance)",
+		Min = 5,
+		Max = 25,
+		Default = 15,
+		Increment = 1,
+		ValueName = "Distance",
+		Callback = function(Value)
+			stuff.ghostSeePlayerDistance = Value
+		end    
+	})
+
+	TabCool:AddToggle({
+		Name = "Notify ghost nearby (only works when hunting)",
+		Default = false,
+		Callback = function(Value)
+			stuff.ghostSeePlayerEnabled = Value
+
+			if Value == true then
+				while stuff.ghostSeePlayerEnabled do
+					task.wait(1)
+
+					task.spawn(function()
+						local distanceGhost = (workspace:WaitForChild("Ghost"):WaitForChild("HumanoidRootPart").Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+
+						if distanceGhost <= stuff.ghostSeePlayerDistance and distanceGhost >= 5 and workspace:WaitForChild("Ghost"):GetAttribute("Hunting") then
+							if workspace:WaitForChild("Ghost"):GetAttribute("Hunting") == false then return end
+
+							OrionLib:MakeNotification({
+								Name = "Ghost Warning",
+								Content = "The ghost is "..tostring(math.floor(distanceGhost)).." studs away from you.",
+								Image = "rbxassetid://7733658504",
+								Time = 3.5
+							})
+						end
+					end)
+				end
+			end
+		end    
+	})
+
+	TabCool:AddToggle({
+		Name = "Notify ghost hunt event",
+		Default = false,
+		Callback = function(Value)
+			if Value == true then
+				stuff.warningHunt = workspace:WaitForChild("Ghost"):GetAttributeChangedSignal("Hunting"):Connect(function()
+					if workspace:WaitForChild("Ghost"):GetAttribute("Hunting") == true then
+						OrionLib:MakeNotification({
+							Name = "Hunt Warning",
+							Content = "Ghost started hunting!",
+							Image = "rbxassetid://7733658504",
+							Time = 5
+						})
+					else
+						OrionLib:MakeNotification({
+							Name = "Hunt Warning",
+							Content = "Ghost ended hunting!",
+							Image = "rbxassetid://7733658504",
+							Time = 5
+						})
+					end
+				end)
+			else
+				if stuff.warningHunt then
+					stuff.warningHunt:Disconnect()
+				end
+			end
+		end    
+	})
+
+	local function getSaltPiles()
+		local SaltPiles = workspace.SaltPiles:GetChildren()
+		local NormalPiles = {}
+		local DisturbedPiles = {}
+
+		for _, d in pairs(SaltPiles) do
+			if d.Name == "SaltLine" then
+				table.insert(NormalPiles, d)
+			elseif d.Name == "DisturbedSaltLine" then
+				table.insert(DisturbedPiles, d)
+			end
+		end
+
+		return {
+			["NormalPiles"] = NormalPiles,
+			["DisturbedPiles"] = DisturbedPiles
+		}
+	end
+
+	TabCool:AddButton({
+		Name = "Trigger all salt piles",
+		Callback = function()
+			local AllSaltPiles = getSaltPiles()
+
+			if #AllSaltPiles.NormalPiles > 0 then
+				for _, d in pairs(AllSaltPiles.NormalPiles) do
+					task.spawn(function()
+						firetouchinterest(workspace.Ghost.Torso,d:WaitForChild("GhostTracker"),0)
+						firetouchinterest(workspace.Ghost.Torso,d:WaitForChild("GhostTracker"),1)
+						--d:WaitForChild("GhostTracker").Size = Vector3.new(2048,2048,2048)
+						--d:WaitForChild("GhostTracker").Position = workspace:WaitForChild("Ghost").HumanoidRootPart.Position
+					end)
+				end
+			else
+				OrionLib:MakeNotification({
+					Name = "Salt Piles Trigger",
+					Content = "There is no salt piles!",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			end
+		end    
+	})
+
+
+	TabCool:AddLabel("Ghost Checks")
+
+	TabCool:AddButton({
+		Name = "Check if Dullahan",
+		Callback = function()
+			local Ghost = workspace:WaitForChild("Ghost")
+
+			if Ghost:GetAttribute("Headless") then
+				if Ghost:GetAttribute("Headless") == true then
+					OrionLib:MakeNotification({
+						Name = "Dullahan Check",
+						Content = "The ghost IS Dullahan!",
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+				else
+					OrionLib:MakeNotification({
+						Name = "Dullahan Check",
+						Content = "The ghost isnt Dullahan",
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+				end
+			else
+				OrionLib:MakeNotification({
+					Name = "Dullahan Check",
+					Content = "The ghost isnt Dullahan",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			end
+		end    
+	})
+
+	TabCool:AddButton({
+		Name = "Check for Ghost Orb",
+		Callback = function()
+			if workspace:FindFirstChild("GhostOrb") then
+				OrionLib:MakeNotification({
+					Name = "Ghost Orb Check",
+					Content = "There is a ghost orb",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			else
+				OrionLib:MakeNotification({
+					Name = "Ghost Orb Check",
+					Content = "There is no ghost orb",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			end
+		end    
+	})
+
+	TabCool:AddButton({
+		Name = "Check for Handprint",
+		Callback = function()
+			if #workspace.Handprints:GetChildren() > 0 then
+				OrionLib:MakeNotification({
+					Name = "Handprint Check",
+					Content = "There is an handprint",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			else
+				OrionLib:MakeNotification({
+					Name = "Handprint Check",
+					Content = "There is no handprints",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			end
+		end    
+	})
+
+	TabCool:AddButton({
+		Name = "Check for Laser Visibility",
+		Callback = function()
+			if ghostLaserVisible then
+				OrionLib:MakeNotification({
+					Name = "Laser Visibility Check",
+					Content = "Ghost can be visible to laser!",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			else
+				OrionLib:MakeNotification({
+					Name = "Laser Visibility Check",
+					Content = "Ghost can't be visible to laser.\nThis was probably an error, to fix it, make sure you put laser projector in the ghost fav room.",
+					Image = "rbxassetid://7733658504",
+					Time = 7.5
+				})
+			end
+		end    
+	})
+
+	local wraithCheckSuccess = false
+	local ISACTUALLYWRAITH = false
+	local wraithCheckingProgress = false
+
+	TabCool:AddButton({
+		Name = "Check if Wraith (will trigger all salt lines)",
+		Callback = function()
+			if wraithCheckingProgress == true then return end
+			wraithCheckingProgress = true
+
+			local AllSaltPiles = getSaltPiles()
+
+			if wraithCheckSuccess == false then
+				if #AllSaltPiles.DisturbedPiles <= 0 then
+					if #AllSaltPiles.NormalPiles > 0 then
+						OrionLib:MakeNotification({
+							Name = "Wraith Check",
+							Content = "Checking for Wraith..",
+							Image = "rbxassetid://7733658504",
+							Time = 3.5
+						})
+
+						local checkFunc = nil
+
+						checkFunc = workspace.SaltPiles.ChildAdded:Connect(function(d)
+							if d.Name == "DisturbedSaltLine" then
+								wraithCheckSuccess = true
+								checkFunc:Disconnect()
+								checkFunc = nil
+
+								OrionLib:MakeNotification({
+									Name = "Wraith Check",
+									Content = "Not Wraith!",
+									Image = "rbxassetid://7733658504",
+									Time = 3.5
+								})
+								wraithCheckingProgress = false
+							end
+						end)
+
+						for _, d in pairs(AllSaltPiles.NormalPiles) do
+							task.spawn(function()
+								firetouchinterest(workspace.Ghost.Torso,d:WaitForChild("GhostTracker"),0)
+								firetouchinterest(workspace.Ghost.Torso,d:WaitForChild("GhostTracker"),1)
+								--d:WaitForChild("GhostTracker").Size = Vector3.new(2048,2048,2048)
+								--d:WaitForChild("GhostTracker").Position = workspace:WaitForChild("Ghost").HumanoidRootPart.Position
+							end)
+						end
+
+						task.delay(2.5,function()
+							if checkFunc then
+								checkFunc:Disconnect()
+								checkFunc = nil
+
+								if wraithCheckSuccess == true then
+									OrionLib:MakeNotification({
+										Name = "Wraith Check",
+										Content = "Not Wraith!",
+										Image = "rbxassetid://7733658504",
+										Time = 3.5
+									})
+									wraithCheckingProgress = false
+								else
+									OrionLib:MakeNotification({
+										Name = "Wraith Check",
+										Content = "Wraith detected!",
+										Image = "rbxassetid://7733658504",
+										Time = 3.5
+									})
+									ISACTUALLYWRAITH = true
+									wraithCheckingProgress = false
+								end
+							end
+						end)
+					else
+						OrionLib:MakeNotification({
+							Name = "Wraith Check",
+							Content = "Please Place a Salt line!",
+							Image = "rbxassetid://7733658504",
+							Time = 3.5
+						})
+						wraithCheckingProgress = false
+					end
+				else
+					OrionLib:MakeNotification({
+						Name = "Wraith Check",
+						Content = "Not Wraith!",
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+					wraithCheckingProgress = false
+				end
+			else
+				if ISACTUALLYWRAITH then
+					OrionLib:MakeNotification({
+						Name = "Wraith Check",
+						Content = "Wraith detected!",
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+					wraithCheckingProgress = false
+				else
+					OrionLib:MakeNotification({
+						Name = "Wraith Check",
+						Content = "Not Wraith!",
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+					wraithCheckingProgress = false
+				end
+			end
+		end    
+	})
+
+	TabPlayer:AddToggle({
+		Name = "Notify Chat Messages",
+		Default = false,
+		Callback = function(Value)
+			if Value == false then
+				for _, d in pairs(stuff.playerChatted) do
+					d:Disconnect()
+				end
+			else
+				for _, d in pairs(game.Players:GetChildren()) do
+					task.spawn(function()
+						if d == game.Players.LocalPlayer then
+						else
+							stuff.playerChatted[d.Name] = d.Chatted:Connect(function(msg)
+								task.spawn(function()
+									local topName = d.Name
+
+									if workspace:WaitForChild("Ragdolls"):FindFirstChild(d.Name) then
+										topName = topName.. " (dead)"
+
+										if stuff.seechats == "alive" then
+											return
+										end
+									else
+										if stuff.seechats == "dead" then
+											return
+										end
+									end
+
+									OrionLib:MakeNotification({
+										Name = topName.." said:",
+										Content = msg,
+										Image = "rbxassetid://124871982298256",
+										Time = 10
+									})
+
+									if stuff.sayInchat2 == true then
+										sayChatMessage(topName.." said: ".. msg)
+									end
+								end)
+							end)
+						end
+					end)
+				end
+			end
+		end    
+	})
+
+	TabPlayer:AddDropdown({
+		Name = "Messages to notify",
+		Default = "all",
+		Options = {"all","alive","dead"},
+		Callback = function(Value)
+			stuff.seechats = Value
+		end    
+	})
+
+	TabPlayer:AddToggle({
+		Name = "Notify Messages In Chat",
+		Default = false,
+		Callback = function(Value)
+			stuff.sayInchat2 = Value
+		end    
+	})
+
+	TabTool:AddButton({
+		Name = "Use LIDAR Scanner",
+		Callback = function()
+			ridarScan()
+		end    
+	})
+
+	TabTool:AddButton({
+		Name = "Notify all rare items",
+		Callback = function()
+			local found = false
+
+			for _, d in pairs(workspace:WaitForChild("Items"):GetChildren()) do
+				if d:GetAttribute("ItemName") then
+					local NameItem = d:GetAttribute("ItemName")
+					local er = true
+
+					if d:GetAttribute("Uninteractable") then
+						if d:GetAttribute("Uninteractable") == true then
+							er = false
+						end
+					end
+
+					if d:GetAttribute("Broken") then
+						if d:GetAttribute("Broken") == true then
+							er = false
+						end
+					end
+
+					if er then
+						if NameItem == "Energy Drink" or NameItem == "Music Box" or NameItem == "Umbra Board" or NameItem == "Energy Watch" then
+							found = true
+
+							OrionLib:MakeNotification({
+								Name = "Rare Item Warning",
+								Content = "A Rare item "..NameItem.." has been found.",
+								Image = "rbxassetid://7733658504",
+								Time = 3.5
+							})
+
+							local hightlight = Instance.new("Highlight")
+							hightlight.Parent = d
+							hightlight.FillColor = Color3.fromRGB(37, 161, 255)
+							game:GetService("Debris"):AddItem(hightlight,5)
+						else
+							if tonumber(d.Name) >= 100 then
+								found = true
+
+								OrionLib:MakeNotification({
+									Name = "Rare Item Warning",
+									Content = "A Rare item "..NameItem.." has been found.",
+									Image = "rbxassetid://7733658504",
+									Time = 3.5
+								})
+
+								local hightlight = Instance.new("Highlight")
+								hightlight.Parent = d
+								hightlight.FillColor = Color3.fromRGB(37, 161, 255)
+								game:GetService("Debris"):AddItem(hightlight,5)
+							end
+						end
+					end
+				end
+			end
+
+			if not found then
+				OrionLib:MakeNotification({
+					Name = "Rare Item Warning",
+					Content = "No rare items were found.",
+					Image = "rbxassetid://7733658504",
+					Time = 3.5
+				})
+			end
+		end    
+	})
+
+	TabTool:AddButton({
+		Name = "Toggle Fuse Box",
+		Callback = function()
+			game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ToggleFuseBox"):FireServer()
+		end    
+	})
+
+	local function gotCoffeeCup()
+		for _, d in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+			if d:IsA("Model") then
+				if d:GetAttribute("ItemName") then
+					if d:GetAttribute("ItemName") == "Coffee Cup" then
+						return true
+					end
+				end
+			end
+		end
+
+		return false
+	end
+
+	TabTool:AddButton({
+		Name = "Get Adrenaline Boost",
+		Callback = function()
+			game.Players.LocalPlayer:SetAttribute("AdrenalineBoost",true)
+		end    
+	})
+	
+	TabTool:AddButton({
+		Name = "Fix Camera Computer",
+		Callback = function()
+			workspace:SetAttribute("Weather","Clear")
+		end    
+	})
+
+	TabTool:AddLabel("Spirit Box")
+
+	TabTool:AddDropdown({
+		Name = "Spirit Box Question",
+		Default = "Where are you?",
+		Options = {
+			"Where are you?",
+			"Are you near?",
+			"Are you far away?",
+			"Are you in the room with me?",
+			"Is there a ghost here?",
+			"What do you want?",
+			"Why are you here?",
+			"What is your goal?",
+			"Do you want us to leave?",
+			"When did you pass away?",
+			"How long ago did you die?",
+			"When did you cross over?" 
+		},
+		Callback = function(Value)
+			stuff.question = Value
+		end    
+	})
+
+	TabTool:AddButton({
+		Name = "Spirit Box Ask Question",
+		Callback = function()
+			game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("AskSpiritBoxFromUI"):FireServer(stuff.question)
+		end    
+	})
+
+	TabTool:AddButton({
+		Name = "Spirit Box Ask Random Question",
+		Callback = function()
+			local options = {
+				"Where are you?",
+				"Are you near?",
+				"Are you far away?",
+				"Are you in the room with me?",
+				"Is there a ghost here?",
+				"What do you want?",
+				"Why are you here?",
+				"What is your goal?",
+				"Do you want us to leave?",
+				"When did you pass away?",
+				"How long ago did you die?",
+				"When did you cross over?" 
+			}
+
+			game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("AskSpiritBoxFromUI"):FireServer(options[math.random(1,#options)])
+		end    
+	})
+	
+	local spammingOpeningDoors = false
+
+	TabTroll:AddToggle({
+		Name = "Spam Doors (Laggy)",
+		Default = false,
+		Callback = function(Value)
+			spammingOpeningDoors = Value
+
+			if spammingOpeningDoors then
+				while spammingOpeningDoors do
+					task.wait()
+					for _, d in pairs(workspace.Doors:GetChildren()) do
+						if d:GetAttribute("Locked") then
+							if d:GetAttribute("Locked") == false then
+								game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClientChangeDoorState"):FireServer(d:WaitForChild("Door"))
+							end
+						else
+							game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClientChangeDoorState"):FireServer(d:WaitForChild("Door"))
+						end
+					end
+				end
+			end
+		end    
+	})
+	
+	local spammingOpeningLight = false
+
+	TabTroll:AddToggle({
+		Name = "Spam Lights (Laggy)",
+		Default = false,
+		Callback = function(Value)
+			spammingOpeningLight = Value
+
+			if spammingOpeningLight then
+				while spammingOpeningLight do
+					task.wait()
+					for _, d in pairs(workspace.Map.Rooms:GetChildren()) do
+						if d:FindFirstChild("LightSwitch") then
+							game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("UseLightSwitch"):FireServer(d)
+						end
+					end
+				end
+			end
+		end    
+	})
+	
+	TabTroll:AddButton({
+		Name = "Disappear All Items",
+		Callback = function()
+			for _, d in pairs(workspace.Items:GetChildren()) do
+				if d.PrimaryPart then
+					local newForce = Instance.new("BodyPosition",d.PrimaryPart)
+					newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+					newForce.Position = Vector3.new(1000000,1000000,1000000)
+				end
+			end
+			
+			for _, d in pairs(game.Players:GetChildren()) do
+				local Tools = d:WaitForChild("ToolsHolder")
+				
+				for _, d in pairs(Tools:GetChildren()) do
+					if d.PrimaryPart then
+						local newForce = Instance.new("BodyPosition",d.PrimaryPart)
+						newForce.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+						newForce.Position = Vector3.new(1000000,1000000,1000000)
+					end
+				end
+			end
+		end    
+	})
+	
+	TabRooms:AddButton({
+		Name = "Get Current Room Temperature",
+		Callback = function()
+			local room = game.Players.LocalPlayer:GetAttribute("CurrentRoom")
+			
+			if workspace:WaitForChild("Map"):WaitForChild("Rooms"):FindFirstChild(room) then
+				if workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature") then
+					OrionLib:MakeNotification({
+						Name = "Room Temperature Check",
+						Content = "The temperature of "..room.." is "..tostring(workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature")),
+						Image = "rbxassetid://7733658504",
+						Time = 3.5
+					})
+				end
+			end
+		end    
+	})
+	
+	local looppppppNOTOOTO = nil
+	local debouncenotifyghosttemp = false
+	
+	local function mentionCheckV1000(rrrrrr)
+		if debouncenotifyghosttemp == false then
+			debouncenotifyghosttemp = true
+
+			OrionLib:MakeNotification({
+				Name = "Room Temperature Check (Ghost)",
+				Content = "The temperature of "..rrrrrr.." is under 0C!",
+				Image = "rbxassetid://7733658504",
+				Time = 3.5
+			})
+			
+			task.wait(2.5)
+			debouncenotifyghosttemp = false
+		end
+	end
+	
+	TabRooms:AddToggle({
+		Name = "Notify Ghost Room temperature under 0C",
+		Default = false,
+		Callback = function(Value)
+			if Value == false then
+				if looppppppNOTOOTO then
+					looppppppNOTOOTO:Disconnect()
+					looppppppNOTOOTO = nil
+				end
+			else
+				local room = returnGhostInfo().favroom
+				
+				if workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature") <= 0 then
+					mentionCheckV1000(room)
+				end
+				
+				looppppppNOTOOTO = workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttributeChangedSignal("Temperature"):Connect(function()
+					if workspace:WaitForChild("Map"):WaitForChild("Rooms"):WaitForChild(room):GetAttribute("Temperature") <= 0 then
+						mentionCheckV1000(room)
+					end
+				end)
+			end
+		end    
+	})
+elseif game.PlaceId == 18199615050 then
+	local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua")))()
+	local Window = OrionLib:MakeWindow({IntroText = "Demonology (PEAK HUBBBBBBBB)", IntroIcon = "rbxassetid://129483530478597",Name = ("Sybau Hub - Demonology🕯️ (Lobby)".." | ".. identifyexecutor()),IntroToggleIcon = "rbxassetid://7734091286", HidePremium = false, SaveConfig = true, IntroEnabled = true, ConfigFolder = "sybayghostgameorsum"})
+	
+	local TabCool = Window:MakeTab({
+		Name = "Party",
+		Icon = "rbxassetid://10216760174",
+		PremiumOnly = false
+	})
+	
+	TabCool:AddButton({
+		Name = "Invite Everyone",
+		Callback = function()
+			if game.Players.LocalPlayer:GetAttribute("IsPartyLeader") == true then
+				OrionLib:MakeNotification({
+					Name = "Warning",
+					Content = "Inviting everyone in the server..",
+					Image = "rbxassetid://7733658504",
+					Time = 5
+				})
+
+				for _, d in pairs(game.Players:GetChildren()) do
+					if d ~= game.Players.LocalPlayer then
+						game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("InvitePlayerToParty"):FireServer(d)
+						task.wait(0.65)
+					end
+				end
+
+				OrionLib:MakeNotification({
+					Name = "Warning",
+					Content = "Done!",
+					Image = "rbxassetid://7733658504",
+					Time = 5
+				})
+			else
+				OrionLib:MakeNotification({
+					Name = "Warning",
+					Content = "Youre not party leader!",
+					Image = "rbxassetid://7733658504",
+					Time = 5
+				})
+			end
+		end    
+	})
+end
