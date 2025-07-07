@@ -1470,7 +1470,7 @@ elseif game.PlaceId == 18199615050 then
 						local contin = true
 						
 						if d:GetAttribute("TutorialCompleted") then
-							if d:GetAttribute("TutorialCompleted") == false then
+							if d:GetAttribute("TutorialCompleted") ~= true then
 								contin = false
 							end
 						else
