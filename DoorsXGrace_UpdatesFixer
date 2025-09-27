@@ -12,9 +12,10 @@ if isfile("IndexellScripts/JSONFiles/GraceSettings.json") then
 	
 	writefile("IndexellScripts/JSONFiles/GraceSettings.json",game:GetService("HttpService"):JSONEncode(savedData))
 	
-	helper.Text = "Fixed! Now execute the Doors x Grace Script!"
-	task.wait(6)
+	helper.Text = "Fixed! Executing the script.."
+	task.wait(3)
 	helper:Destroy()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/IdkMyNameLoll/PublicScripts/refs/heads/main/DoorsXGrace.lua"))()
 else
 	helper.Text = "GraceSettings.json file not found!"
 	task.wait(3)
