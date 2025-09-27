@@ -1,0 +1,22 @@
+--not obsufucated because you can do the same by editing the json file
+
+local helper = Instance.new("Hint",workspace)
+helper.Text = "Fixing.."
+
+if isfile("IndexellScripts/JSONFiles/GraceSettings.json") then
+	local readed = readfile("IndexellScripts/JSONFiles/GraceSettings.json")
+	local savedData = {}
+	
+	savedData = game:GetService("HttpService"):JSONDecode(readed)
+	savedData.instantAssets = false
+	
+	writefile("IndexellScripts/JSONFiles/GraceSettings.json",game:GetService("HttpService"):JSONEncode(savedData))
+	
+	helper.Text = "Fixed! Now execute the Doors x Grace Script!"
+	task.wait(6)
+	helper:Destroy()
+else
+	helper.Text = "GraceSettings.json file not found!"
+	task.wait(3)
+	helper:Destroy()
+end
