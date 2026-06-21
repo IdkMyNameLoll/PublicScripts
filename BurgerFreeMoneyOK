@@ -1,0 +1,49 @@
+task.wait(1)
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Respawn"):FireServer(false)
+
+game.Players.LocalPlayer.OnTeleport:Connect(function()
+	queueteleport("loadstringshihere")
+end)
+
+local function doserverhop()
+	--totally not stolen
+	local servers = {}
+	local req = game:HttpGet("https://games.roblox.com/v1/games/" ..game.PlaceId.. "/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true")
+	local body = game:GetService("HttpService"):JSONDecode(req)
+
+	if body and body.data then
+		for i, v in next, body.data do
+			if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= game.JobId then
+				table.insert(servers, 1, v.id)
+			end
+		end
+	end
+
+	if #servers then
+		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], game.Players.LocalPlayer)
+	end
+end
+
+task.wait(2.5)
+
+for _, d in pairs(workspace.Entities.Items:GetChildren()) do
+	if d.Name == "Money" then
+		local OkRepe = true
+		task.spawn(function()
+			repeat
+				game.Players.LocalPlayer.Character:PivotTo(d.CFrame+Vector3.new(0,10,0))
+				task.wait()
+			until OkRepe == false
+		end)
+
+		task.wait(0.35)
+		game:GetService("ReplicatedStorage"):WaitForChild("Systems"):WaitForChild("NetworkOwnershipsSystem"):WaitForChild("Network5"):InvokeServer(d)
+		OkRepe = false
+		d.CFrame = workspace.CurrentCamera.PoIs.CashRegisterPart.CFrame
+	end
+end
+
+while true do
+	doserverhop()
+	task.wait(2)
+end
