@@ -1,3 +1,4 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(1)
 game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Respawn"):FireServer(false)
 
