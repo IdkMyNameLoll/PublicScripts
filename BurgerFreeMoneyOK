@@ -9,8 +9,6 @@ end
 
 queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
 
-queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/IdkMyNameLoll/PublicScripts/refs/heads/main/BurgerFreeMoneyOK'))()")
-
 game.Players.LocalPlayer.OnTeleport:Connect(function()
 	queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/IdkMyNameLoll/PublicScripts/refs/heads/main/BurgerFreeMoneyOK'))()")
 end)
