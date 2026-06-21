@@ -2,7 +2,7 @@ task.wait(1)
 game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Respawn"):FireServer(false)
 
 game.Players.LocalPlayer.OnTeleport:Connect(function()
-	queueteleport("loadstringshihere")
+	queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/IdkMyNameLoll/PublicScripts/refs/heads/main/BurgerFreeMoneyOK'))()")
 end)
 
 local function doserverhop()
