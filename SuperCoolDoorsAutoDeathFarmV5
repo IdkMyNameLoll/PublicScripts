@@ -1,0 +1,53 @@
+function missing(t, f, fallback)
+	if type(f) == t then return f end
+	return fallback
+end
+
+queueteleport =  missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+
+task.spawn(function()
+	while task.wait() do
+		if game.Players.LocalPlayer then break end
+	end
+	game:GetService("Players").LocalPlayer.OnTeleport:Connect(function()
+		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/IdkMyNameLoll/PublicScripts/refs/heads/main/SuperCoolDoorsAutoDeathFarmV5'))()")
+	end)
+end)
+
+repeat task.wait() until workspace:FindFirstChild("StarterElevator",true)
+repeat task.wait() until game.Players.LocalPlayer.Character
+repeat task.wait() until game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+task.wait(2)
+replicatesignal(game.Players.LocalPlayer.Kill)
+game.Players.LocalPlayer.CharacterAdded:Wait()
+
+local cewcew
+
+task.spawn(function()
+	while cewcew do
+		game.ReplicatedStorage.RemotesFolder.Crouch:FireServer(true,true)
+		task.wait()
+	end
+end)
+
+local function createNewMovingPath(pos,v)
+	game.Players.LocalPlayer.Character:PivotTo(CFrame.new(pos))
+	return true
+end
+
+repeat  createNewMovingPath(workspace:WaitForChild("CurrentRooms"):WaitForChild("0"):WaitForChild("Assets"):WaitForChild("KeyObtain"):WaitForChild("Hitbox").Position+Vector3.new(0,0,5)) task.wait() 
+	fireproximityprompt(workspace:WaitForChild("CurrentRooms"):WaitForChild("0"):FindFirstChild("KeyObtain",true).ModulePrompt)
+until game.Players.LocalPlayer.Character:FindFirstChild("Key")
+local Door = workspace.CurrentRooms["0"]:FindFirstChild("UnlockPrompt",true)
+repeat 
+	fireproximityprompt(Door)
+	createNewMovingPath(workspace:WaitForChild("CurrentRooms"):WaitForChild("0"):WaitForChild("RoomExit").Position+Vector3.new(0,0,5))
+	task.wait()
+until Door.Parent.Parent:GetAttribute("Opened")
+replicatesignal(game.Players.LocalPlayer.Kill)
+cewcew = false
+while task.wait() do
+	if not game.ReplicatedStorage.GameData.StartedPlayAgain.Value then
+		game.ReplicatedStorage.RemotesFolder.PlayAgain:FireServer()
+	end
+end
