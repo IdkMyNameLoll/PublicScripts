@@ -1,0 +1,166 @@
+local equipped = false
+local holding:BasePart = nil
+local Reversed = false
+local uis = game.Players.LocalPlayer:GetMouse()
+local naaaa = Instance.new("Attachment")
+local tool = game:GetObjects("rbxassetid://132605917763436")[1]
+
+tool.TextureId = "rbxassetid://86969356120228"
+tool.Parent = game.Players.LocalPlayer.Backpack
+
+if not _G.SizeSpeed_Tool then
+	_G.SizeSpeed_Tool = 0.01
+end
+
+local Speedieok = _G.SizeSpeed_Tool
+
+spawn(function()
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if holding then
+			if Reversed == false then
+				if holding.Parent == game:GetService("Workspace") then
+					holding.Size = holding.Size + Vector3.new(Speedieok,Speedieok,Speedieok)
+				else
+					spawn(function()
+						local Modelo = holding:FindFirstAncestorOfClass("Model")
+						if workspace:FindFirstChild("CurrentRooms") then
+							if Modelo and Modelo.Parent == workspace.CurrentRooms then 
+								return 
+							end 
+						end
+						if Modelo then
+							Modelo:ScaleTo(Modelo:GetScale() + Speedieok)
+						else
+							holding.Size = holding.Size + Vector3.new(Speedieok,Speedieok,Speedieok)
+						end
+					end)
+				end
+			else
+				if holding.Parent == game:GetService("Workspace") then
+					holding.Size = holding.Size - Vector3.new(Speedieok,Speedieok,Speedieok)
+				else
+					spawn(function()
+						local Modelo = holding:FindFirstAncestorOfClass("Model")
+						if workspace:FindFirstChild("CurrentRooms") then
+							if Modelo and Modelo.Parent == workspace.CurrentRooms then 
+								return 
+							end 
+						end
+						if Modelo then
+							Modelo:ScaleTo(Modelo:GetScale() - Speedieok)
+						else
+							holding.Size = holding.Size - Vector3.new(Speedieok,Speedieok,Speedieok)
+						end
+					end)
+				end
+			end
+		end
+	end)
+end)
+
+local blinking = false
+local Taskm = nil
+
+local function AddEffect(Reverse,Part)
+	blinking = true
+	task.spawn(function()
+		while blinking do
+			Taskm = game:GetService("TweenService"):Create(tool.Light,TweenInfo.new(0.5),{
+				Size = Vector3.new(0.31, 0.31, 0.31)
+			})
+			Taskm:Play()
+			Taskm.Completed:Wait()
+			if not blinking then return end
+			Taskm = game:GetService("TweenService"):Create(tool.Light,TweenInfo.new(0.5),{
+				Size = Vector3.new(0.245, 0.245, 0.245)
+			})
+			Taskm:Play()
+			Taskm.Completed:Wait()
+		end
+	end)
+	if Reverse == false then
+		naaaa.Name = "AintNoWayBru_ToolBeamAttach"
+		naaaa.Parent = Part
+		tool.Beam.Color = ColorSequence.new(Color3.fromRGB(0,255,0))
+		tool.Beam.Attachment1 = naaaa
+		tool.Light.Color = Color3.fromRGB(0,255,0)
+		tool.Light.ReverseNo:Play()
+		tool.Idk.Arrow.Decal.Transparency = 0
+	else
+		naaaa.Name = "AintNoWayBru_ToolBeamAttach"
+		naaaa.Parent = Part
+		tool.Beam.Color = ColorSequence.new(Color3.fromRGB(255,0,0))
+		tool.Beam.Attachment1 = naaaa
+		tool.Light.Color = Color3.fromRGB(255,0,0)
+		tool.Light.Reverse:Play()
+		tool.Idk.ArrowD.Decal.Transparency = 0
+	end
+end
+
+local function removeEffect()
+	tool.Light.Reverse:Stop()
+	tool.Light.ReverseNo:Stop()
+	tool.Light.Color = Color3.fromRGB(255,255,255)
+	tool.Idk.Arrow.Decal.Transparency = 1
+	tool.Idk.ArrowD.Decal.Transparency = 1
+	naaaa.Parent = nil
+	blinking = false
+	if Taskm then
+		Taskm:Cancel()
+		Taskm = nil
+	end
+	tool.Light.Size = Vector3.new(0.245, 0.245, 0.245)
+end
+
+tool.Equipped:Connect(function()
+	equipped = true
+end)
+
+tool.Unequipped:Connect(function()
+	equipped = false
+	if holding == nil then
+	else
+		holding = nil
+		removeEffect()
+	end
+end)
+
+uis.Button1Down:Connect(function()
+	if equipped == true then
+		if holding == nil then
+			if uis.Target ~= nil then
+				holding = uis.Target
+				Reversed = false
+				AddEffect(Reversed,uis.Target)
+			end
+		end
+	end
+end)
+
+uis.Button1Up:Connect(function()
+	if holding == nil then
+	else
+		holding = nil
+		removeEffect()
+	end
+end)
+
+uis.Button2Down:Connect(function()
+	if equipped == true then
+		if holding == nil then
+			if uis.Target ~= nil then
+				holding = uis.Target
+				Reversed = true
+				AddEffect(Reversed,uis.Target)
+			end
+		end
+	end
+end)
+
+uis.Button2Up:Connect(function()
+	if holding == nil then
+	else
+		holding = nil
+		removeEffect()
+	end
+end)
