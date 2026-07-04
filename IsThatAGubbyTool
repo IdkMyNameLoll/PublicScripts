@@ -1,0 +1,134 @@
+if not isfolder("IndexellScripts") then
+	makefolder("IndexellScripts")
+end
+if not isfolder("IndexellScripts/ISTHATAGUBBY") then
+	makefolder("IndexellScripts/ISTHATAGUBBY")
+end
+if not isfile("IndexellScripts/ISTHATAGUBBY/Tool.rbxm") then
+	writefile("IndexellScripts/ISTHATAGUBBY/Tool.rbxm", game:HttpGet("https://github.com/IdkMyNameLoll/OtherAssets/raw/refs/heads/main/ToolGub.rbxm"))
+end
+if not isfile("IndexellScripts/ISTHATAGUBBY/Equip.mp3") then
+	writefile("IndexellScripts/ISTHATAGUBBY/Equip.mp3", game:HttpGet("https://github.com/IdkMyNameLoll/OtherAssets/raw/refs/heads/main/eqGub.mp3"))
+end
+if not isfile("IndexellScripts/ISTHATAGUBBY/Interact.mp3") then
+	writefile("IndexellScripts/ISTHATAGUBBY/Interact.mp3", game:HttpGet("https://github.com/IdkMyNameLoll/OtherAssets/raw/refs/heads/main/IntGub.mp3"))
+end
+
+local NewGubby:Tool = game:GetObjects(getcustomasset("IndexellScripts/ISTHATAGUBBY/Tool.rbxm", true))[1]
+local GubbyfiedTemplate = NewGubby:Clone()
+local tt = GubbyfiedTemplate
+
+GubbyfiedTemplate = GubbyfiedTemplate.Model.Head
+GubbyfiedTemplate.Parent = game.ReplicatedStorage
+tt:Destroy()
+GubbyfiedTemplate.Parent = nil
+
+NewGubby:WaitForChild("Handle"):WaitForChild("sound_equip2").SoundId = getcustomasset("IndexellScripts/ISTHATAGUBBY/Equip.mp3", true)
+NewGubby:WaitForChild("Handle"):WaitForChild("sound_click").SoundId = getcustomasset("IndexellScripts/ISTHATAGUBBY/Interact.mp3", true)
+NewGubby.CanBeDropped = false
+
+task.spawn(function()
+	for _ = 1,1000 do
+		game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("ItemShop").Boost.Visible = false
+		task.wait()
+	end
+end)
+
+local ForceShow = false
+
+if not game.Players.LocalPlayer.PlayerGui:FindFirstChild("MainUI") then
+	ForceShow = true
+end
+
+if game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("ItemShop").Visible == true or ForceShow then
+	local Choosen = false
+	local NewItemOk = game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("ItemShop"):WaitForChild("Items"):WaitForChild("ItemShop_Vitamins"):Clone()
+
+	NewItemOk.Name = "ItemShop_Gubby"
+	NewItemOk.Stack.Text = "x1"
+	NewItemOk.Stack.Visible = false
+	NewItemOk.Price.Text = "0"
+	NewItemOk.Title.Text = "Gubby?"
+	NewItemOk.Desc.Text = "Is that a gubby"
+	NewItemOk.ImageLabel.Image = NewGubby.TextureId
+	NewItemOk.Parent = game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("ItemShop"):WaitForChild("Items")
+	NewItemOk.MouseButton1Down:Connect(function()
+		Choosen = not Choosen
+		NewItemOk.BackgroundTransparency = Choosen and 0.5 or 0.9
+		game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("Initiator"):WaitForChild("Main_Game"):WaitForChild("PreRun"):WaitForChild(Choosen and "Press" or "PressDown"):Play()
+	end)
+
+	game.Players.LocalPlayer.PlayerGui:WaitForChild("MainUI"):WaitForChild("ItemShop").Confirm.MouseButton1Down:Connect(function()
+		if Choosen then
+			NewGubby.Parent = game.Players.LocalPlayer.Backpack
+		else
+			NewGubby:Destroy()
+		end
+	end)
+else
+	NewGubby.Parent = game.Players.LocalPlayer.Backpack
+end
+
+local function gubbythisgubbythat(part)
+	local oldt = part.Transparency
+	part.Transparency = 1
+	local GubbyNew = GubbyfiedTemplate:Clone()
+	GubbyNew.Name = "Part"
+	GubbyNew.Size = part.Size
+	GubbyNew.Mesh.Scale = part.Size
+	GubbyNew.Transparency = oldt
+	GubbyNew.Decal.Transparency = oldt
+	local nweweld = Instance.new("Weld",GubbyNew)
+	nweweld.Part0 = GubbyNew
+	nweweld.Part1 = part
+	GubbyNew.Parent = part
+end
+
+local function gubbyfy(p)
+	if p == nil then return end
+	local ToGubbyfy = p:FindFirstAncestorOfClass("Model") or p
+	local GubbyfySelf = ToGubbyfy:IsA("BasePart")
+	
+	if ToGubbyfy.Parent == workspace.CurrentRooms then
+		return
+	end
+	
+	if GubbyfySelf then
+		gubbythisgubbythat(p)
+	end
+	
+	for _, d in pairs(ToGubbyfy:GetDescendants()) do
+		if d == p then continue end
+		if d:IsA("BasePart") then
+			gubbythisgubbythat(d)
+		elseif d:IsA("Texture") or d:IsA("Decal") then
+			d.Transparency = 1
+		elseif d:IsA("Sound") then
+			d:ClearAllChildren()
+			d.SoundId = "rbxassetid://9118862378"
+			if d.Volume < 3 then
+				d.Volume = 3
+			end
+		end
+	end
+end
+
+NewGubby.Equipped:Connect(function()
+	NewGubby:WaitForChild("Handle").sound_equip2:Play()
+end)
+NewGubby.Unequipped:Connect(function()
+	NewGubby:WaitForChild("Handle").sound_equip2:Stop()
+	for _, d in pairs(NewGubby:WaitForChild("Handle"):GetChildren()) do
+		if d.Name == "clickclone" then
+			d:Destroy()
+		end
+	end
+end)
+NewGubby.Activated:Connect(function()
+	gubbyfy(game.Players.LocalPlayer:GetMouse().Target)
+	local NewSound = NewGubby:WaitForChild("Handle"):WaitForChild("sound_click"):Clone()
+	NewSound.Name = "clickclone"
+	NewSound.Parent = NewGubby:WaitForChild("Handle")
+	NewSound:Play()
+	game.Debris:AddItem(NewSound,1)
+end)
