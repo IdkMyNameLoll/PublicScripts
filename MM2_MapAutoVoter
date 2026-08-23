@@ -39,7 +39,7 @@ local function doMapThing(usepad)
 	if OMGGIGOTTAVOTEBROO then return end
 	OMGGIGOTTAVOTEBROO = true
 	
-	local NeededVotes = tonumber((padfound.VoteInfoGui.Container.Votes.Text:gsub("Votes: ",""))) + VoteTimes
+	local NeededVotes = tonumber((usepad.VoteInfoGui.Container.Votes.Text:gsub("Votes: ",""))) + VoteTimes
 	local oldpos = game.Players.LocalPlayer.Character:GetPivot()
 	
 	while task.wait() do
