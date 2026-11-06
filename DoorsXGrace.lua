@@ -1,0 +1,3 @@
+--better loader
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TheActualTomixer/Skids/refs/heads/main/ScriptReuploads/DoorsXGrace"))()
